@@ -81,6 +81,11 @@ void Graph::addEdge(int startId, int destId, int edgeWeight = 1) {
                 newEdge->nextNode = nullptr;
                 newEdge->prevNode = currentNode;
                 currentNode->nextNodeWeight = edgeWeight;
+
+                if(edgeWeight > this->maxWeight) {
+                    maxWeight = edgeWeight;
+                }
+
                 localMaxDegree++;
                 headNode->numDegrees += 1;
                 if(headNode->numDegrees % 2 != 0){ // Checks to see if the node has odd degrees
@@ -183,7 +188,7 @@ void Graph::displayGraph() {
         std::cout << std::endl;
     }
     std::cout << "# nodes: " << this->nodeCount << "\n# edges: " << this->edgeCount << "\nMax Degrees: " <<
-              this->maxDegree << "\nEuler Tour: " << (this->oddDegreeNodes.empty() ? "true":"false") << std::endl;
+              this->maxDegree << "\nMax Weight: " << this->maxWeight << std::endl;
     std::cout << "Graph adjacency list printed" << std::endl;
 }
 
@@ -292,8 +297,24 @@ int main() {
     Graph test;
     std::srand(time(nullptr));
 
-    test.createRandomGraph(4, 3, true, seed);  // Note a seed of 42 will be randomized
-    test.displayGraph();
-    std::cout << "\ndone" << std::endl;
+    int maxEdges = 0;
+    int stepSize = 10;
+    int maxSize = 100;
+
+    // Test with random weights
+    for (int i = 10; i <= 10; i += 10){
+        maxEdges = ((i * (i - 1)) / 2);
+        int edges = randomRangeGen(maxEdges, 0);
+        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
+        test.displayGraph();
+        test.clearGraph();
+        std::cout << "\nGraph Size: " << i << std::endl;
+    }
+
+    // Test without random weights
+
+//    test.createRandomGraph(4, 0, true, seed);  // Note a seed of 42 will be randomized
+//    test.displayGraph();
+//    std::cout << "\ndone" << std::endl;
     return 0;
 }
