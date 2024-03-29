@@ -199,8 +199,10 @@ void Graph::createRandomGraph(int numVerts, int numEdges, bool randomWeights, un
     vertices with (v * (v - 1))/2 edges <- I.e. a complete graph. There is an option to use Random weights or a weight
      of 1 for all edges.
     */
-
-
+    bool noSetSeed = false;
+    if (seed == 42){
+        noSetSeed = true; // no seed given, go random
+    }
     // Create adjacency list
     for (int i = 0; i < numVerts; i++) {
         this->addNode(i);
@@ -223,16 +225,29 @@ void Graph::createRandomGraph(int numVerts, int numEdges, bool randomWeights, un
 
         // Pick our random nodes to make an edge with
         do {
-
-            startNodeId = randomRangeGen((numVerts - 1), 0, seed);
-            endNodeId = randomRangeGen((numVerts - 1), 0, seed + 1);
-            seed++;
-            // Determine if using random weights or not
-            if(randomWeights){
-                weight = randomRangeGen(100, 1, seed);
+            if(noSetSeed){
+                startNodeId = randomRangeGen((numVerts - 1), 0, 42);
+                endNodeId = randomRangeGen((numVerts - 1), 0, 42);
+                weight = randomRangeGen(100, 1, 42);
+                // Determine if using random weights or not
+                if(randomWeights){
+                    weight = randomRangeGen(100, 1, seed);
+                }
+                else{
+                    weight = 1;
+                }
             }
-            else{
-                weight = 1;
+            else {
+                startNodeId = randomRangeGen((numVerts - 1), 0, seed);
+                endNodeId = randomRangeGen((numVerts - 1), 0, seed + 1);
+                seed++;
+                // Determine if using random weights or not
+                if(randomWeights){
+                    weight = randomRangeGen(100, 1, seed);
+                }
+                else{
+                    weight = 1;
+                }
             }
         }
         while(startNodeId == endNodeId);  // Ensure nodes are different
@@ -250,12 +265,21 @@ bool Graph::sortcol(const std::vector<int> &v1, const std::vector<int> &v2) {
 int randomRangeGen(int endRange, int startRange = 0, unsigned int seed = 42) {
     // General implementation borrowed from:
     // https://www.digitalocean.com/community/tutorials/random-number-generator-c-plus-plus
+    int random;
 
-    // Modified with ChatGPT to take in a seed.
-    // Initialize the random number generator with the provided seed
-    std::mt19937 gen(seed);
-    // Retrieve a random number between startRange and EndRange
-    int random = startRange + (gen() % ((endRange - startRange) + 1));
+    // Random pathway
+    if (seed == 42) {
+        random = startRange + (rand() % ((endRange - startRange) + 1));
+    }
+    // Set seed pathway
+    else {
+        // Modified with ChatGPT to take in a seed.
+        // Initialize the random number generator with the provided seed
+        std::mt19937 gen(seed);
+        // Retrieve a random number between startRange and EndRange
+        random = startRange + (gen() % ((endRange - startRange) + 1));
+    }
+
 
     return random;
 }
@@ -264,9 +288,11 @@ int randomRangeGen(int endRange, int startRange = 0, unsigned int seed = 42) {
 
 
 int main() {
-
+    unsigned int seed = 43; // NOTE: to set the seed manually, choose any value OTHER THAN 42.
     Graph test;
-    test.createRandomGraph(4, 3, true, 45);
+    std::srand(time(nullptr));
+
+    test.createRandomGraph(4, 3, true, seed);  // Note a seed of 42 will be randomized
     test.displayGraph();
     std::cout << "\ndone" << std::endl;
     return 0;
