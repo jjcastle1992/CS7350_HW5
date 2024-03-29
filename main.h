@@ -60,9 +60,9 @@ private:
     int maxDegree; // Counts the maximum degree of any vertex in the graph
     std::vector<int> oddDegreeNodes; // List containing all nodes of odd degree (Determines Euler Tour Truth)
     bool verbose; // turns on/off debug prints
+    int maxWeight; // max edge weight in the graph
 };
 
 int randomRangeGen(int, int, unsigned int);
-int skewedRandom(double, double, double);  // From ChatGPT allows for skewed PRNG
 
 #endif //HW5_CODE_MAIN_H
