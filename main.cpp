@@ -199,6 +199,40 @@ void Graph::clearGraph() {
     this->edgeCount = 0;
 }
 
+void Graph::writeToFile(const std::string& filename) {
+    std::vector<Node*> graphToWrite = this->adjacencyList;
+    std::ofstream outfile;
+//    std::cout << filename;
+    outfile.open(filename);
+
+    if(outfile.fail()){ // File could not be opened
+        std::cerr << "ERROR: File could not be opened" << std::endl;
+        std::exit(1);
+    }
+    outfile << "Start Node, Destination Node, Edge Weight" << std::endl;
+
+    Node *currentNode;
+    for(int i = 0; i < this->adjacencyList.size(); i++){
+        // Check to see if node has an edge and write out
+        int startId = -1;
+        currentNode = this->adjacencyList[i];
+        startId = currentNode->nodeID;
+
+        while(currentNode->nextNode != nullptr){
+            int destId = -1;
+            int weight = -1;
+            destId = currentNode->nextNode->nodeID;
+            weight = currentNode->nextNodeWeight;
+            // If all three are valid (not -1), then write to file
+            if ((startId != -1) && (destId != -1) && (weight != -1)){
+                outfile << startId << "," << destId << "," << weight << std::endl;
+            }
+            currentNode = currentNode->nextNode;
+        }
+    }
+    outfile.close();
+}
+
 void Graph::createRandomGraph(int numVerts, int numEdges, bool randomWeights, unsigned int seed = 42, double skew = 1) {
     /* Accepts a number of verts and a number of edges and randomly creates edges between 2 random vertices (that may or
     may not be undirected). The graph may or may not be connected, and can have anywhere from 0 nodes with 0 edges to V
@@ -322,34 +356,65 @@ int main() {
     int maxEdges = 0;
     int stepSize = 10;
     int maxSize = 100;
-
-    Graph test;
-    test.createRandomGraph(5, 15, true, seed, 2);
-    test.displayGraph();
+    std::vector<std::vector<long long>>  randomWeightTiming;  // [NumNodes][Q1 Time (Graph read)]]
+    std::vector<std::vector<long long>>  weightOneTiming;  // [NumNodes][Q1 Time (Graph read)]]
 
     // Test with random weights
-//    std::cout << "*************Graphs with Random Weights*************" << std::endl;
-//    for (int i = 10; i <= maxSize; i += 10){
-//        Graph test;
-//        maxEdges = ((i * (i - 1)) / 2);
-//        int edges = skewRandomRangeGen(maxEdges, 0, seed + 1);
-//        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
-//        test.displayGraph();
-//        test.clearGraph();
-//        std::cout << "\nGraph Size: " << i << std::endl;
-//    }
+    std::cout << "*************Graphs with Random Weights*************" << std::endl;
+    for (int i = 10; i <= maxSize; i += stepSize){
+        Graph randomWeights;
+        maxEdges = ((i * (i - 1)) / 2);
+        int edges = skewRandomRangeGen(maxEdges, 0, seed + 1);
 
-    // Test without random weights
-//    std::cout << "*************Graphs with Weight 1*************" << std::endl;
-//    for (int i = 10; i <= maxSize; i += 10){
-//        Graph weight1;
-//        maxEdges = ((i * (i - 1)) / 2);
-//        int edges = randomRangeGen(maxEdges, 0);
-//        weight1.createRandomGraph(i, edges, false, seed);  // Note a seed of 42 will be randomized
-//        weight1.displayGraph();
-//        weight1.clearGraph();
-//        std::cout << "\nGraph Size: " << i << std::endl;
-//    }
+        // Q1 Timing
+        auto q1start = std::chrono::high_resolution_clock::now();  // start timer
+        randomWeights.createRandomGraph(i, edges, true, seed, 1);  // Note a seed of 42 will be randomized
+        randomWeights.displayGraph();
+        auto q1stop = std::chrono::high_resolution_clock::now(); // stop timer
+        auto q1duration = std::chrono::duration_cast<std::chrono::microseconds>(q1stop - q1start);
+        randomWeightTiming.push_back({randomWeights.getNodeCount(), q1duration.count()});
+
+        //Write to file
+        std::string filename = "randomGraphRandomWeight_" + std::to_string(i) + ".csv";
+        randomWeights.writeToFile(filename);
+
+        randomWeights.clearGraph();
+        std::cout << "\nGraph Size: " << i << std::endl;
+    }
+
+     // Test without random weights
+    std::cout << "*************Graphs with Weight 1*************" << std::endl;
+    for (int i = 10; i <= maxSize; i += stepSize){
+        Graph weight1;
+        maxEdges = ((i * (i - 1)) / 2);
+        int edges = randomRangeGen(maxEdges, 0, seed + i);
+        // Q1 Timing
+        auto q1start = std::chrono::high_resolution_clock::now();  // start timer
+        weight1.createRandomGraph(i, edges, false, seed, 1);  // Note a seed of 42 will be randomized
+        auto q1stop = std::chrono::high_resolution_clock::now(); // stop timer
+        auto q1duration = std::chrono::duration_cast<std::chrono::microseconds>(q1stop - q1start);
+        weightOneTiming.push_back({weight1.getNodeCount(), q1duration.count()});
+
+        // Write to file
+        std::string filename = "randomWeight1_" + std::to_string(i) + ".csv";
+        weight1.writeToFile(filename);
+
+        weight1.clearGraph();
+        std::cout << "\nGraph Size: " << i << std::endl;
+    }
+
+    // Display Timing
+    std::cout << "\nRandom Weight Timing Stats:";
+    for (int i = 0; i < randomWeightTiming.size(); i++) {
+      std::cout << "\n\tNodeCount: " << randomWeightTiming[i][0] <<
+      "\n\tQ1 (Create) Timing: " << randomWeightTiming[i][1] << " Microseconds" << std::endl;
+    }
+
+    std::cout << "\nWeight 1 Timing Stats:";
+    for (int i = 0; i < weightOneTiming.size(); i++) {
+        std::cout << "\n\tNodeCount: " << weightOneTiming[i][0] <<
+                  "\n\tQ1 (Create) Timing: " << weightOneTiming[i][1] << " Microseconds" << std::endl;
+    }
 
     std::cout << "\ndone" << std::endl;
     return 0;
