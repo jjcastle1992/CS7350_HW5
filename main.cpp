@@ -302,21 +302,21 @@ int main() {
     int stepSize = 10;
     int maxSize = 100;
 
-    Graph test;
-    test.createRandomGraph(5, 15, true, seed);
-    test.displayGraph();
+//    Graph test;
+//    test.createRandomGraph(5, 15, true, seed);
+//    test.displayGraph();
 
-//    // Test with random weights
-//    std::cout << "*************Graphs with Random Weights*************" << std::endl;
-//    for (int i = 10; i <= maxSize; i += 10){
-//        Graph test;
-//        maxEdges = ((i * (i - 1)) / 2);
-//        int edges = randomRangeGen(maxEdges, 0);
-//        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
-////        test.displayGraph();
-//        test.clearGraph();
-//        std::cout << "\nGraph Size: " << i << std::endl;
-//    }
+    // Test with random weights
+    std::cout << "*************Graphs with Random Weights*************" << std::endl;
+    for (int i = 10; i <= maxSize; i += 10){
+        Graph test;
+        maxEdges = ((i * (i - 1)) / 2);
+        int edges = randomRangeGen(maxEdges, 0, seed + 1);
+        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
+        test.displayGraph();
+        test.clearGraph();
+        std::cout << "\nGraph Size: " << i << std::endl;
+    }
 
     // Test without random weights
 //    std::cout << "*************Graphs with Weight 1*************" << std::endl;
