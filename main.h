@@ -48,8 +48,8 @@ public:
     static bool sortcol(const std::vector<int>&, const std::vector<int>&);
 
     // Graph Creation Methods
-    void createRandomGraph(int, int, bool, unsigned int); // Creates a random graph that is connected, but may undirected or directed.
-                                            // Can use random weights or weight of 1.
+    void createRandomGraph(int, int, bool, unsigned int, double); // Creates a random graph that is connected, but may undirected or directed.
+                                            // Can use random weights or weight of 1. Accepts a skew where 1 is normal dist.
 
 
 private:
@@ -62,7 +62,7 @@ private:
     bool verbose; // turns on/off debug prints
     int maxWeight; // max edge weight in the graph
 };
-
 int randomRangeGen(int, int, unsigned int);
+int skewRandomRangeGen(int, int, unsigned int, double);
 
 #endif //HW5_CODE_MAIN_H
