@@ -45,6 +45,7 @@ public:
     // Printing and utilities
     void displayGraph(); // Displays the entire graph in adjacency list format.
     void clearGraph(); // Deletes Adjacency Matrix
+    void writeToFile(const std::string&); // writes adjacency list data to file per spec
     static bool sortcol(const std::vector<int>&, const std::vector<int>&);
 
     // Graph Creation Methods
