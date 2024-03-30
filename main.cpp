@@ -286,12 +286,35 @@ int randomRangeGen(int endRange, int startRange = 0, unsigned int seed = 42) {
         random = startRange + (gen() % ((endRange - startRange) + 1));
     }
 
-
     return random;
 }
 
 // Function to generate skewed random numbers
+int skewRandomRangeGen(int endRange, int startRange = 0, double skew = 1.0, unsigned int seed = 42) {
+    // From ChatGPT
+    // Initialize the random number generator with the provided seed or a random seed
+    std::mt19937 gen;
+    if (seed == 42) {
+        // Generate a random seed based on the current time
+        seed = static_cast<unsigned int>(std::time(nullptr));
+        gen.seed(seed);
+    } else {
+        // Initialize the random number generator with the provided seed
+        gen.seed(seed);
+    }
 
+    // Generate a random number between 0 and 1
+    std::uniform_real_distribution<double> dist(0, 1);
+    double randNum = dist(gen);
+
+    // Apply skewness to the random number
+    double skewedRand = pow(randNum, skew);
+
+    // Scale the skewed random number to fit the range
+    int random = startRange + static_cast<int>((endRange - startRange + 1) * skewedRand);
+
+    return random;
+}
 
 int main() {
     unsigned int seed = 4002; // NOTE: to set the seed manually, choose any value OTHER THAN 42.
@@ -307,20 +330,20 @@ int main() {
 //    test.displayGraph();
 
     // Test with random weights
-    std::cout << "*************Graphs with Random Weights*************" << std::endl;
-    for (int i = 10; i <= maxSize; i += 10){
-        Graph test;
-        maxEdges = ((i * (i - 1)) / 2);
-        int edges = randomRangeGen(maxEdges, 0, seed + 1);
-        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
-        test.displayGraph();
-        test.clearGraph();
-        std::cout << "\nGraph Size: " << i << std::endl;
-    }
+//    std::cout << "*************Graphs with Random Weights*************" << std::endl;
+//    for (int i = 10; i <= maxSize; i += 10){
+//        Graph test;
+//        maxEdges = ((i * (i - 1)) / 2);
+//        int edges = randomRangeGen(maxEdges, 0, seed + 1);
+//        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
+//        test.displayGraph();
+//        test.clearGraph();
+//        std::cout << "\nGraph Size: " << i << std::endl;
+//    }
 
     // Test without random weights
 //    std::cout << "*************Graphs with Weight 1*************" << std::endl;
-//    for (int i = 10; i <= 10; i += 10){
+//    for (int i = 10; i <= maxSize; i += 10){
 //        Graph weight1;
 //        maxEdges = ((i * (i - 1)) / 2);
 //        int edges = randomRangeGen(maxEdges, 0);
@@ -330,6 +353,13 @@ int main() {
 //        std::cout << "\nGraph Size: " << i << std::endl;
 //    }
 
-//    std::cout << "\ndone" << std::endl;
+// Test skewed vs unskewed PRNG
+
+    int regRand = randomRangeGen(100, 1, seed);
+    int skewedRand = skewRandomRangeGen(100, 1, 0.5, seed);
+    std::cout << "Reg Random: " << regRand << std::endl;
+    std::cout << "Skew Random: " << skewedRand << std::endl;
+
+    std::cout << "\ndone" << std::endl;
     return 0;
 }
