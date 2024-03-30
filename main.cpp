@@ -16,6 +16,7 @@ Graph::Graph() {
     edgeCount = 0;
     maxDegree = 0;
     verbose = false;
+    maxWeight = 0;
     this->oddDegreeNodes;
 }
 
@@ -293,28 +294,42 @@ int randomRangeGen(int endRange, int startRange = 0, unsigned int seed = 42) {
 
 
 int main() {
-    unsigned int seed = 43; // NOTE: to set the seed manually, choose any value OTHER THAN 42.
-    Graph test;
+    unsigned int seed = 4002; // NOTE: to set the seed manually, choose any value OTHER THAN 42.
+
     std::srand(time(nullptr));
 
     int maxEdges = 0;
     int stepSize = 10;
     int maxSize = 100;
 
-    // Test with random weights
-    for (int i = 10; i <= 10; i += 10){
-        maxEdges = ((i * (i - 1)) / 2);
-        int edges = randomRangeGen(maxEdges, 0);
-        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
-        test.displayGraph();
-        test.clearGraph();
-        std::cout << "\nGraph Size: " << i << std::endl;
-    }
+    Graph test;
+    test.createRandomGraph(5, 15, true, seed);
+    test.displayGraph();
+
+//    // Test with random weights
+//    std::cout << "*************Graphs with Random Weights*************" << std::endl;
+//    for (int i = 10; i <= maxSize; i += 10){
+//        Graph test;
+//        maxEdges = ((i * (i - 1)) / 2);
+//        int edges = randomRangeGen(maxEdges, 0);
+//        test.createRandomGraph(i, edges, true, seed);  // Note a seed of 42 will be randomized
+////        test.displayGraph();
+//        test.clearGraph();
+//        std::cout << "\nGraph Size: " << i << std::endl;
+//    }
 
     // Test without random weights
+//    std::cout << "*************Graphs with Weight 1*************" << std::endl;
+//    for (int i = 10; i <= 10; i += 10){
+//        Graph weight1;
+//        maxEdges = ((i * (i - 1)) / 2);
+//        int edges = randomRangeGen(maxEdges, 0);
+//        weight1.createRandomGraph(i, edges, false, seed);  // Note a seed of 42 will be randomized
+//        weight1.displayGraph();
+//        weight1.clearGraph();
+//        std::cout << "\nGraph Size: " << i << std::endl;
+//    }
 
-//    test.createRandomGraph(4, 0, true, seed);  // Note a seed of 42 will be randomized
-//    test.displayGraph();
 //    std::cout << "\ndone" << std::endl;
     return 0;
 }
